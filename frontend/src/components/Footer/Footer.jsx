@@ -7,7 +7,7 @@ function Footer() {
             <div className='flex flex-col items-center gap-2'>
                 <p className='text-4xl font-bold'>Ready to Conquer Your To-Do List?</p>
                 <p className='mb-2 w-1/2 text-center'>Join thousands of users who have transformed their productivity with NinjaTodo. Start your journey to getting sh*t done today.</p>
-                <button className='bg-[#757575] px-4 py-2 rounded-full'>Start Getting Sh*t Done <EastOutlinedIcon /></button>
+                <Link to='/general-tasks' className='bg-[#757575] px-4 py-2 rounded-full'>Start Getting Sh*t Done <EastOutlinedIcon /></Link>
             </div>
             <div className='px-5 mt-10 text-[#757575] flex justify-between items-center'>
                 <div className="bg-white border-2 border-[#757575] inline-block py-1 px-3 rounded-lg">

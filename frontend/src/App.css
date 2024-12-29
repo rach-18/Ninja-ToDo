@@ -1,9 +1,15 @@
 .general-shadow {
-    box-shadow: -4px 4px 0 0 rgba(0, 0, 0, 0.25);
+    box-shadow: -4px 4px 0 0 rgba(37, 99, 235, 0.3);
 }
 
 .slide-color {
-    background: linear-gradient(to right, #f9f6ee 50%, black 50%);
+    background: linear-gradient(to right, 
+        rgba(59, 130, 246, 0.6) 0%, /* blue-500 */
+        rgba(168, 85, 247, 0.6) 25%, /* purple-500 */
+        rgba(236, 72, 153, 0.6) 50%,
+        black 50%, 
+        black 100%
+    );
     background-size: 200% 100%;
     background-position: right bottom;
     transition: all 0.5s ease-out;
@@ -11,10 +17,88 @@
 
 .slide-color:hover {
     background-position: left bottom;
-    color: black;
-    border: 1px solid black;
+    color: white;
 }
 
-.hover-shadow:hover {
-    box-shadow: -4px 4px 0 0 rgba(0, 0, 0, 0.25);
+.gradient-border {
+    position: relative;
+    background: white;
+}
+
+.gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 2px; /* This controls border width */
+    background: linear-gradient(to bottom right, #2563eb, #9333ea, #db2777);
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    border-radius: 0.5rem;
+}
+
+.blue-hover:hover {
+    box-shadow: -4px 4px 0 0 rgba(37, 99, 235, 0.3);
+}
+
+.purple-hover:hover {
+    box-shadow: -4px 4px 0 0 rgba(147, 51, 234, 0.3);
+}
+
+.pink-hover:hover {
+    box-shadow: -4px 4px 0 0 rgba(219, 39, 119, 0.3);
+}
+
+.red-shadow {
+    box-shadow: -4px 4px 0 0 rgba(252, 165, 165, 0.3);
+}
+
+.blue-shadow {
+    box-shadow: -4px 4px 0 0 rgba(147, 197, 253, 0.3);
+}
+
+.yellow-shadow {
+    box-shadow: -4px 4px 0 0 rgba(253, 224, 71, 0.3);
+}
+
+.green-shadow {
+    box-shadow: -4px 4px 0 0 rgba(134, 239, 172, 0.3);
+}
+
+.paragraph {
+    position: relative; /* Needed for positioning the pseudo-element */
+    z-index: 1; /* Ensure the content stays above the background */
+}
+
+.paragraph::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('ParagraphBG.png');
+    background-position: center;
+    /* background-repeat: no-repeat; */
+    background-size: contain;
+    opacity: 0.5; /* Adjust opacity as needed */
+    z-index: -1; /* Place it behind the content */
+}
+
+.feature-blue-shadow {
+    box-shadow: -10px 10px 0 0 rgba(147, 197, 253, 0.3);
+}
+
+.feature-purple-shadow {
+    box-shadow: -10px 10px 0 0 rgba(147, 51, 234, 0.3);
+}
+
+.feature-pink-shadow {
+    box-shadow: -10px 10px 0 0 rgba(219, 39, 119, 0.3);
 }

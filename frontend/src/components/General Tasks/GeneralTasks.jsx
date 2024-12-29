@@ -1,10 +1,33 @@
 import GeneralNavbar from "./GeneralNavbar";
-import CachedOutlinedIcon from '@mui/icons-material/CachedOutlined';
+import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+import BoltOutlinedIcon from '@mui/icons-material/BoltOutlined';
 import Tasks from "./Tasks";
+import AIRephraseModal from "./AIRephraseModal";
+import { useState } from "react";
+import TotalTime from "./TotalTime";
+import TimeChart from "./TimeChart";
+import { useTask } from "../../context/TaskContext";
+import axios from 'axios';
 
 function GeneralTasks() {
+    const [taskInfo, setTaskInfo] = useState({
+        task: '',
+        priority: '',
+        time: '',
+        complete: false,
+        menu: false
+    });
+
+    const {
+        isRephraseModalOpen, 
+        setIsRephraseModalOpen,
+        priorityOrder,
+        tasks,
+        setTasks,
+    } = useTask();
+
     const generateTime = () => {
         const time = [];
 
@@ -15,24 +38,83 @@ function GeneralTasks() {
         return time;
     }
 
+    const fetchRephrasedTask = async (e) => {
+        e.preventDefault();
+        const {data} = await axios.post(`${import.meta.env.VITE_API_URL}/general-task`, {
+            task: taskInfo.task
+        });
+        console.log(data);
+        setIsRephraseModalOpen(true);
+    }
+
+    function handleTaskInfo(e) {
+        const newTaskInfo = {
+            ...taskInfo,
+            [e.target.name] : e.target.value
+        };
+        setTaskInfo(newTaskInfo);
+    }
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        // console.log(taskInfo);
+        const {priority, task, time, complete, menu} = taskInfo;
+        const updatedTasks = {...tasks};
+
+        if(!updatedTasks[priority]) {
+            updatedTasks[priority] = [];
+        }
+        updatedTasks[priority].push({task, time, complete, menu});
+
+        setTasks(updatedTasks);
+
+        console.log('Updated tasks: ', updatedTasks);
+
+        setTaskInfo({});
+        // console.log('Tasks: ', tasks);
+    }
+
     return (
         <>
             <GeneralNavbar />
-            <div className="border-2 border-dashed border-black p-5 w-11/12 mx-auto rounded-xl my-10">
-                <p className="font-bold text-4xl text-center">What do you want to get done today?</p>
-                <form action="" className="mt-5">
+            <div className="border-2 border-dashed border-blue-200 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-5 w-11/12 mx-auto rounded-xl my-10">
+                <p className="font-bold text-4xl text-center block text-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">What's your Ninja mission for today?</p>
+                <form 
+                    className="mt-5"
+                    onSubmit={handleSubmit}
+                >
                     <div className="general-shadow bg-white flex items-center justify-between pl-5 pr-8 py-3 rounded-lg gap-5">
-                        <input className="w-full outline-none" type="text" name="task" placeholder="Enter your task..." />
+                        <input 
+                            className="w-full outline-none" 
+                            onChange={handleTaskInfo}
+                            type="text" 
+                            name="task" 
+                            placeholder="Enter your task..." 
+                            value={taskInfo.task || ''}
+                            required
+                        />
                     </div>
                     <div className="mt-5 flex gap-5">
-                        <select className="w-full px-5 py-5 outline-none rounded-lg general-shadow" name="priority" id="priority">
+                        <select 
+                            className="w-full px-5 py-5 outline-none rounded-lg general-shadow" 
+                            name="priority" 
+                            onChange={handleTaskInfo}
+                            value={taskInfo.priority || ''}
+                            required
+                        >
                             <option value="" disabled selected>Select Priority</option>
-                            <option value="4">Important & Urgent</option>
-                            <option value="3">Important & Not Urgent</option>
-                            <option value="2">Not Important & Urgent</option>
-                            <option value="1">Not Important & Not Urgent</option>
+                            <option value="Important & Urgent">Important & Urgent</option>
+                            <option value="Important & Not Urgent">Important & Not Urgent</option>
+                            <option value="Not Important & Urgent">Not Important & Urgent</option>
+                            <option value="Not Important & Not Urgent">Not Important & Not Urgent</option>
                         </select>
-                        <select className="w-full px-5 py-5 outline-none rounded-lg general-shadow" name="priority" id="priority">
+                        <select 
+                            className="w-full px-5 py-5 outline-none rounded-lg general-shadow" 
+                            name="time"
+                            onChange={handleTaskInfo}
+                            value={taskInfo.time || ''}
+                            required
+                        >
                             <option value="" disabled selected>Select Time</option>
                             {
                                 generateTime().map((time) => {
@@ -42,26 +124,33 @@ function GeneralTasks() {
                         </select>
                     </div>
                     <div className="mt-5 flex gap-5 justify-between">
-                        <button className="flex gap-4 w-full bg-black rounded-lg px-3 py-2 justify-center bg-white border-2 border-black hover-shadow hover:scale-[1.01] transition-all">
-                            <CachedOutlinedIcon />
+                        <button onClick={fetchRephrasedTask} className="flex gap-4 w-full bg-black rounded-lg px-3 py-2 justify-center bg-white border-2 text-blue-600 border-blue-600 blue-hover hover:scale-[1.01] transition-all">
+                            <AutoAwesomeOutlinedIcon />
                             AI Rephrase
                         </button>
-                        <button className="flex gap-4 w-full bg-black rounded-lg px-3 py-2 justify-center bg-white border-2 border-black hover-shadow hover:scale-[1.01] transition-all">
+                        <button className="flex gap-4 w-full bg-black rounded-lg px-3 py-2 justify-center bg-white border-2 text-purple-600 border-purple-600 purple-hover hover:scale-[1.01] transition-all">
                             <ErrorOutlineOutlinedIcon />
                             Suggest Priority
                         </button>
-                        <button className="flex gap-4 w-full bg-black rounded-lg px-3 py-2 justify-center bg-white border-2 border-black hover-shadow hover:scale-[1.01] transition-all">
+                        <button className="flex gap-4 w-full bg-black rounded-lg px-3 py-2 justify-center bg-white border-2 text-pink-600 border-pink-600 pink-hover hover:scale-[1.01] transition-all">
                             <AccessTimeOutlinedIcon />
                             Suggest Time
                         </button>
                     </div>
                     <div className="flex justify-center mt-8">
-                        <button className="slide-color border-[1px] border-white text-white text-xl px-4 py-2 rounded-lg shadow-xl w-1/2 mx-auto hover:scale-105 transition-all" type="submit">Add Task</button>
+                        <button className="bg-gradient-to-r from-blue-500/60 via-purple-500/60 to-pink-500/60 text-white text-xl px-4 py-2 rounded-lg shadow-xl w-1/2 mx-auto hover:scale-105 transition-all" type="submit">
+                            <BoltOutlinedIcon />
+                            Add Task
+                        </button>
                     </div>
                 </form>
-                <hr className="h-0.5 w-5/6 mx-auto bg-gray-200 my-8" />
+                <hr className="h-0.5 w-5/6 mx-auto bg-blue-100 mt-8 mb-5" />
                 <Tasks />
+                <hr className="h-0.5 w-5/6 mx-auto bg-blue-100 mt-8 mb-5" />
+                <TotalTime />
+                <TimeChart />
             </div>
+            <AIRephraseModal isRephraseModalOpen={isRephraseModalOpen} setIsRephraseModalOpen={setIsRephraseModalOpen} />
         </>
     )
 }

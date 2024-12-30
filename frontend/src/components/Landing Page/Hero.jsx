@@ -11,7 +11,7 @@ function Hero() {
                         <p className="text-2xl mt-2">You're not lazy, it's the mental hurdles of getting started!</p>
                     </div>
                     <div className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-white inline text-lg font-semibold px-4 py-2 rounded-full mt-8">
-                        <Link to='#'>Overcome Your Mental Hurdles <EastOutlinedIcon /></Link>
+                        <Link to='/login-signup'>Overcome Your Mental Hurdles <EastOutlinedIcon /></Link>
                     </div>
                 </div>
                 <div className="bg-gray-300 w-1/2 rounded-lg flex items-center justify-center h-full">

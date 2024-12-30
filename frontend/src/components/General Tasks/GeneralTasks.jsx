@@ -10,6 +10,7 @@ import TotalTime from "./TotalTime";
 import TimeChart from "./TimeChart";
 import { useTask } from "../../context/TaskContext";
 import axios from 'axios';
+import Footer from "../Footer/Footer";
 
 function GeneralTasks() {
     const [taskInfo, setTaskInfo] = useState({
@@ -151,6 +152,7 @@ function GeneralTasks() {
                 <TimeChart />
             </div>
             <AIRephraseModal isRephraseModalOpen={isRephraseModalOpen} setIsRephraseModalOpen={setIsRephraseModalOpen} />
+            <Footer />
         </>
     )
 }

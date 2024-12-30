@@ -8,7 +8,7 @@ function Navbar() {
                     <p className="itim-regular text-2xl font-semibold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-transparent bg-clip-text">NINJA TODO</p>
                 </div>
                 <div className="bg-purple-600 px-4 py-2 rounded-full text-white shadow-lg hover:scale-105 transition-all">
-                    <Link to='#'>Get Started</Link>
+                    <Link to='/login-signup'>Get Started</Link>
                 </div>
                 {/* <div className="flex gap-5">
                     <Link to='#'>Mental Hurdles</Link>

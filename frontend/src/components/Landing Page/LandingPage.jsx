@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import Paragraph from "./Paragraph";
 import Hurdles from "./Hurdles";
 import Features from "./Features";
+import Footer from "../Footer/Footer";
 
 function LandingPage() {
     return (
@@ -21,6 +22,7 @@ function LandingPage() {
                 />
                 <Features />
             </div>
+            <Footer />
         </>
     );
 }

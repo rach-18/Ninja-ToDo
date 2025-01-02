@@ -10,7 +10,7 @@ function Hurdles() {
     return (
         <>
             <div className="mt-20">
-                <p className="font-bold text-4xl text-center block">Hurdles You Might Face</p>
+                <p className="font-bold text-4xl text-center block">Consequences of Poor Planning</p>
                 <div className="mt-10 flex gap-5 flex-wrap justify-center">
                     <HurdlesCard icon={<AccessTimeOutlinedIcon sx={{fontSize: 50}} />} title="Procrastination" def="Unclear tasks and unrealistic time estimates create hesitation and confusion, leading to delays or missed deadlines." />
                     <HurdlesCard icon={<LayersOutlinedIcon sx={{fontSize: 50}} />} title="Feeling Overwhelmed" def="Multiple tasks compete for your attention, causing overwhelm and stress as you struggle to decide where to begin." />

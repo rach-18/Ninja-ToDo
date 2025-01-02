@@ -106,3 +106,7 @@
 .purple-shadow {
     box-shadow: -4px 4px 0 0 rgba(147, 51, 234, 0.3);
 }
+
+.landing-page {
+    /* background-attachment: fixed; */
+}

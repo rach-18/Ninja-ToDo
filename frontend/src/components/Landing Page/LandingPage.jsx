@@ -9,11 +9,11 @@ function LandingPage() {
     return (
         <>
             <Navbar />
-            <div className="w-11/12 mx-auto my-10">
+            <div className="landing-page">
                 <Hero />
                 <Paragraph 
-                    title="What are Mental Hurdles?" 
-                    para="Mental hurdles are psychological barriers that prevent you from starting tasks, even when you know they're important. They're not a sign of laziness, but a common challenge that even the most capable individuals face."    
+                    title="What is Poor Planning?" 
+                    para="Poor planning is the hidden barrier that makes even capable individuals struggle to start and finish tasks."    
                 />
                 <Hurdles />
                 <Paragraph

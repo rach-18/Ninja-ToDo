@@ -12,12 +12,15 @@ import TimeChart from "./TimeChart";
 import { useTask } from "../../context/TaskContext";
 import axios from "axios";
 import Footer from "../Footer/Footer";
+import NinjaProgress from "./NinjaProgress";
+import Unlock from "./Unlock";
 
 function GeneralTasks() {
   const [taskInfo, setTaskInfo] = useState({
     task: "",
     priority: "",
     time: "",
+    tag: "",
     complete: false,
     menu: false,
   });
@@ -28,6 +31,9 @@ function GeneralTasks() {
     priorityOrder,
     tasks,
     setTasks,
+    setRephrasedTask,
+    setTimeTotal,
+    setTotalTasks,
   } = useTask();
 
   const generateTime = () => {
@@ -42,14 +48,69 @@ function GeneralTasks() {
 
   const fetchRephrasedTask = async (e) => {
     e.preventDefault();
-    const { data } = await axios.post(
-      `${import.meta.env.VITE_API_URL}/general-task`,
-      {
-        task: taskInfo.task,
-      }
-    );
-    console.log(data);
     setIsRephraseModalOpen(true);
+    setRephrasedTask("Clarifying Ninja Task...");
+
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/rephrase`,
+        {
+          task: taskInfo.task,
+        }
+      );
+      setRephrasedTask(data.response);
+      console.log(data);
+    } catch (error) {
+      setRephrasedTask("Failed to clarify the task. Please try again!");
+      console.log(error);
+    }
+  };
+
+  const fetchPriority = async (e) => {
+    e.preventDefault();
+    setTaskInfo((prev) => ({
+      ...prev,
+      priority: "Please wait...",
+    }));
+
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/priority`,
+        {
+          task: taskInfo.task,
+        }
+      );
+
+      setTaskInfo((prev) => ({
+        ...prev,
+        priority: data.priority,
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchTime = async (e) => {
+    e.preventDefault();
+    setTaskInfo((prev) => ({ ...prev, time: "Please wait..." }));
+
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/time`,
+        {
+          task: taskInfo.task,
+        }
+      );
+
+      console.log(data);
+
+      setTaskInfo((prev) => ({
+        ...prev,
+        time: data.time,
+      }));
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   function handleTaskInfo(e) {
@@ -60,28 +121,10 @@ function GeneralTasks() {
     setTaskInfo(newTaskInfo);
   }
 
-  //   function handleSubmit(e) {
-  //     e.preventDefault();
-  //     // console.log(taskInfo);
-  //     const { priority, task, time, complete, menu } = taskInfo;
-  //     const updatedTasks = { ...tasks };
-
-  //     if (!updatedTasks[priority]) {
-  //       updatedTasks[priority] = [];
-  //     }
-  //     updatedTasks[priority].push({ task, time, complete, menu });
-
-  //     setTasks(updatedTasks);
-
-  //     console.log("Updated tasks: ", updatedTasks);
-
-  //     setTaskInfo({});
-  //     // console.log('Tasks: ', tasks);
-  //   }
-
   function handleSubmit(e) {
     e.preventDefault();
-    const { priority, task, time, complete, menu } = taskInfo;
+    const { priority, task, time, tag, complete, menu } = taskInfo;
+    setTimeTotal((prev) => prev + Number(time));
 
     if (!priority || !task) {
       // Handle case when priority or task is not selected/entered
@@ -97,14 +140,17 @@ function GeneralTasks() {
     }
 
     // Add the task to the selected priority category
-    updatedTasks[priority].push({ task, time, complete, menu });
+    updatedTasks[priority].push({ task, time, tag, complete, menu });
 
     // Update the tasks state with the new task added to the correct priority box
     setTasks(updatedTasks);
+    setTotalTasks((prev) => prev + 1);
 
     // Reset task input after adding
     setTaskInfo({});
   }
+
+  // console.log(tasks);
 
   return (
     <>
@@ -125,7 +171,10 @@ function GeneralTasks() {
                 value={taskInfo.task || ""}
                 required
               />
-              <button className="flex gap-1 text-blue-600 hover:bg-blue-100 py-2 px-3 rounded-lg transition-all">
+              <button
+                onClick={fetchRephrasedTask}
+                className="flex gap-1 text-blue-600 hover:bg-blue-100 py-2 px-3 rounded-lg transition-all"
+              >
                 <AutoAwesomeOutlinedIcon />
                 AI
               </button>
@@ -136,8 +185,12 @@ function GeneralTasks() {
                   className="outline-none"
                   name="priority"
                   onChange={handleTaskInfo}
-                  value={taskInfo.priority || ""}
-                  required
+                  value={
+                    taskInfo.priority === "Please wait..."
+                      ? ""
+                      : taskInfo.priority || ""
+                  }
+                  // value={taskInfo.priority || ""}
                 >
                   <option value="" disabled selected>
                     Select Priority
@@ -153,7 +206,10 @@ function GeneralTasks() {
                     Not Important & Not Urgent
                   </option>
                 </select>
-                <button className="flex gap-4 text-purple-600">
+                <button
+                  onClick={fetchPriority}
+                  className="flex gap-4 text-purple-600"
+                >
                   <ErrorOutlineOutlinedIcon />
                   AI
                 </button>
@@ -163,8 +219,11 @@ function GeneralTasks() {
                   className="outline-none"
                   name="time"
                   onChange={handleTaskInfo}
-                  value={taskInfo.time || ""}
-                  required
+                  value={
+                    taskInfo.time === "Please wait..."
+                      ? ""
+                      : taskInfo.time || ""
+                  }
                 >
                   <option value="" disabled selected>
                     Select Time
@@ -177,7 +236,10 @@ function GeneralTasks() {
                     );
                   })}
                 </select>
-                <button className="flex gap-4 text-pink-600">
+                <button
+                  onClick={fetchTime}
+                  className="flex gap-4 text-pink-600"
+                >
                   <AccessTimeOutlinedIcon />
                   AI
                 </button>
@@ -185,10 +247,9 @@ function GeneralTasks() {
               <div className="flex items-center justify-between px-5 py-5 gap-5 rounded-lg general-shadow bg-white w-1/3">
                 <select
                   className="outline-none"
-                  name="time"
+                  name="tag"
                   onChange={handleTaskInfo}
-                  value={taskInfo.time || ""}
-                  required
+                  value={taskInfo.tag || ""}
                 >
                   <option value="" disabled selected>
                     Select Tag
@@ -217,13 +278,18 @@ function GeneralTasks() {
         </div>
         {/* <hr className="h-0.5 w-5/6 mx-auto bg-blue-100 mt-8 mb-5" /> */}
         <Tasks />
-        <hr className="h-0.5 w-5/6 mx-auto bg-blue-100 mt-8 mb-5" />
+        {/* <hr className="h-0.5 w-5/6 mx-auto bg-blue-100 mt-8 mb-5" /> */}
         <TotalTime />
         <TimeChart />
+        <NinjaProgress />
+        <Unlock />
       </div>
       <AIRephraseModal
         isRephraseModalOpen={isRephraseModalOpen}
         setIsRephraseModalOpen={setIsRephraseModalOpen}
+        original={taskInfo.task}
+        setTaskInfo={setTaskInfo}
+        taskInfo={taskInfo}
       />
       <Footer />
     </>

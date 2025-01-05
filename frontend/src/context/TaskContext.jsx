@@ -1,21 +1,42 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const TaskContext = createContext();
 
 export function TaskProvider({ children }) {
   // States
-  const [tasks, setTasks] = useState({
-    "Important & Urgent": [],
-    "Important & Not Urgent": [],
-    "Not Important & Urgent": [],
-    "Not Important & Not Urgent": [],
+  const [tasks, setTasks] = useState(() => {
+    const savedTasks = localStorage.getItem("tasks");
+    return savedTasks
+      ? JSON.parse(savedTasks)
+      : {
+          "Important & Urgent": [],
+          "Important & Not Urgent": [],
+          "Not Important & Urgent": [],
+          "Not Important & Not Urgent": [],
+        };
   });
 
   const [isRephraseModalOpen, setIsRephraseModalOpen] = useState(false);
   const [taskInput, setTaskInput] = useState("");
-  const [rephrasedTask, setRephrasedTask] = useState("");
+  const [rephrasedTask, setRephrasedTask] = useState(
+    "Clarifying Ninja Task..."
+  );
   const [priority, setPriority] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [timeTotal, setTimeTotal] = useState(() => {
+    const savedTimeTotal = localStorage.getItem("timeTotal");
+    return savedTimeTotal ? Number(savedTimeTotal) : 0;
+  });
+
+  const [totalTasks, setTotalTasks] = useState(() => {
+    const savedTotalTasks = localStorage.getItem("totalTasks");
+    return savedTotalTasks ? Number(savedTotalTasks) : 0;
+  });
+
+  const [completedTasks, setCompletedTasks] = useState(() => {
+    const savedCompletedTasks = localStorage.getItem("completedTasks");
+    return savedCompletedTasks ? Number(savedCompletedTasks) : 0;
+  });
 
   const priorityOrder = {
     "Important & Urgent": 1,
@@ -24,16 +45,37 @@ export function TaskProvider({ children }) {
     "Not Important & Not Urgent": 4,
   };
 
+  // Sync tasks, totalTasks, and completedTasks to local storage
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
+
+  useEffect(() => {
+    localStorage.setItem("totalTasks", totalTasks.toString());
+  }, [totalTasks]);
+
+  useEffect(() => {
+    localStorage.setItem("completedTasks", completedTasks.toString());
+  }, [completedTasks]);
+
+  useEffect(() => {
+    localStorage.setItem("timeTotal", timeTotal.toString());
+  }, [timeTotal]);
+
   // Functions
   const addTask = (newTask) => {
-    setTasks([...tasks, newTask]);
+    setTasks((prevTasks) => ({
+      ...prevTasks,
+      [priority]: [...prevTasks[priority], newTask],
+    }));
+    setTotalTasks((prev) => prev + 1);
   };
 
   const handleRephrase = async () => {
     if (!taskInput.trim()) return;
 
     try {
-      const response = await fetch("your-backend-url/rephrase", {
+      const response = await fetch("api/rephrase", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,6 +84,7 @@ export function TaskProvider({ children }) {
       });
 
       const data = await response.json();
+      console.log(data);
       setRephrasedTask(data.rephrasedTask);
       setIsRephraseModalOpen(true);
     } catch (error) {
@@ -51,28 +94,40 @@ export function TaskProvider({ children }) {
 
   const toggleComplete = (priority, taskIndex) => {
     setTasks((prevTasks) => {
-      const updatedTasks = { ...prevTasks }; // Copy the tasks object
-      updatedTasks[priority] = [...updatedTasks[priority]]; // Copy the specific priority array
+      const updatedTasks = { ...prevTasks };
+      updatedTasks[priority] = [...updatedTasks[priority]];
+
+      const task = updatedTasks[priority][taskIndex];
+      const taskDuration = Number(task.time);
+
+      setTimeTotal((prevTimeTotal) =>
+        task.complete
+          ? prevTimeTotal + taskDuration
+          : prevTimeTotal - taskDuration
+      );
+      setCompletedTasks((prev) => (task.complete ? prev - 1 : prev + 1));
+
       updatedTasks[priority][taskIndex] = {
-        ...updatedTasks[priority][taskIndex], // Copy the specific task object
-        complete: !updatedTasks[priority][taskIndex].complete, // Toggle complete status
+        ...task,
+        complete: !task.complete,
       };
+
       return updatedTasks;
     });
   };
 
   const deleteTask = (priority, taskIndex) => {
     setTasks((prevTasks) => {
-      const updatedTasks = { ...prevTasks }; // Create a copy of the tasks object
+      const updatedTasks = { ...prevTasks };
+      const timeDuration = Number(updatedTasks[priority][taskIndex].time);
+      setTimeTotal((prev) => prev - timeDuration);
       updatedTasks[priority] = updatedTasks[priority].filter(
-        (_, index) => index !== taskIndex // Remove the task at the given index
+        (_, index) => index !== taskIndex
       );
 
-      // if(updatedTasks[priority].length === 0) {
-      //     delete updatedTasks[priority];
-      // }
-      // return updatedTasks;
+      return updatedTasks;
     });
+    setTotalTasks((prev) => prev - 1);
   };
 
   return (
@@ -92,6 +147,12 @@ export function TaskProvider({ children }) {
         selectedTime,
         setSelectedTime,
         priorityOrder,
+        timeTotal,
+        setTimeTotal,
+        totalTasks,
+        setTotalTasks,
+        completedTasks,
+        setCompletedTasks,
         // Functions
         addTask,
         handleRephrase,

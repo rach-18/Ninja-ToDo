@@ -52,12 +52,13 @@ function GeneralTasks() {
     setRephrasedTask("Clarifying Ninja Task...");
 
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/rephrase`,
-        {
-          task: taskInfo.task,
-        }
-      );
+      const backendUrl =
+        process.env.NODE_ENV === "production"
+          ? "https://ninja-todo.onrender.com/"
+          : "http://127.0.0.1:5000";
+      const { data } = await axios.post(`${backendUrl}/api/rephrase`, {
+        task: taskInfo.task,
+      });
       setRephrasedTask(data.response);
       console.log(data);
     } catch (error) {
@@ -74,12 +75,13 @@ function GeneralTasks() {
     }));
 
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/priority`,
-        {
-          task: taskInfo.task,
-        }
-      );
+      const backendUrl =
+        process.env.NODE_ENV === "production"
+          ? "https://ninja-todo.onrender.com/"
+          : "http://127.0.0.1:5000";
+      const { data } = await axios.post(`${backendUrl}/api/priority`, {
+        task: taskInfo.task,
+      });
 
       setTaskInfo((prev) => ({
         ...prev,
@@ -95,12 +97,13 @@ function GeneralTasks() {
     setTaskInfo((prev) => ({ ...prev, time: "Please wait..." }));
 
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/time`,
-        {
-          task: taskInfo.task,
-        }
-      );
+      const backendUrl =
+        process.env.NODE_ENV === "production"
+          ? "https://ninja-todo.onrender.com/"
+          : "http://127.0.0.1:5000";
+      const { data } = await axios.post(`${backendUrl}/api/time`, {
+        task: taskInfo.task,
+      });
 
       console.log(data);
 

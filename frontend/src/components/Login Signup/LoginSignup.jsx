@@ -168,6 +168,7 @@ function LoginSignup() {
             <Link
               className="bg-red-300 text-white px-4 py-2 rounded-full mt-2"
               to="/login-signup"
+              onClick={() => setStatus("signup")}
             >
               Try Again
             </Link>

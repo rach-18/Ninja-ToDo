@@ -1,13 +1,30 @@
 import { useState } from "react";
+import { db } from "../../firebase"; // Adjust the path to your Firebase config file
+import { collection, addDoc } from "firebase/firestore";
 
 const EarlyAccess = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState(""); // To show success or error messages
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Name:", name, "Email:", email);
-    // Add form submission logic here
+
+    try {
+      // Add data to Firestore
+      const docRef = await addDoc(collection(db, "earlyAccessRequests"), {
+        name,
+        email,
+        timestamp: new Date(), // Optional: Add a timestamp
+      });
+      console.log("Document written with ID: ", docRef.id);
+      setMessage("Thank you for requesting early access!");
+      setName("");
+      setEmail("");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      setMessage("Failed to submit your request. Please try again.");
+    }
   };
 
   return (
@@ -58,6 +75,9 @@ const EarlyAccess = () => {
             Request Access
           </button>
         </form>
+        {message && (
+          <p className="text-center mt-4 text-sm text-green-600">{message}</p>
+        )}
       </div>
     </div>
   );

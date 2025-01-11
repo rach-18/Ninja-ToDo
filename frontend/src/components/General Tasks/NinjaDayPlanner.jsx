@@ -28,17 +28,19 @@ function NinjaDayPlanner() {
   const calculateMetrics = () => {
     let totalTasks = 0;
     let workTime = 0;
-    let breakTime = 0;
+    let breakTime = 24 * 60;
 
     Object.keys(tasks).forEach((priority) => {
       tasks[priority]?.forEach((task) => {
         totalTasks++;
         const taskTime = parseTime(task.time);
-        if (task.tag === "Work") {
-          workTime += taskTime;
-        } else if (task.tag === "Break") {
-          breakTime += taskTime;
-        }
+        workTime += taskTime;
+        breakTime -= taskTime;
+        // if (task.tag === "Work") {
+        //   workTime += taskTime;
+        // } else if (task.tag === "Break") {
+        //   breakTime += taskTime;
+        // }
       });
     });
 

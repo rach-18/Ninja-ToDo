@@ -14,6 +14,8 @@ import axios from "axios";
 import Footer from "../Footer/Footer";
 import NinjaProgress from "./NinjaProgress";
 import Unlock from "./Unlock";
+import { Link } from "react-router-dom";
+import NinjaDayPlanner from "./NinjaDayPlanner";
 
 function GeneralTasks() {
   const [taskInfo, setTaskInfo] = useState({
@@ -262,10 +264,10 @@ function GeneralTasks() {
                   <option value="Family">Family</option>
                   <option value="Misc">Misc</option>
                 </select>
-                <button className="flex gap-4 text-green-600">
+                <Link to="/early-access" className="flex gap-4 text-green-600">
                   <LocalOfferOutlinedIcon />
                   Custom
-                </button>
+                </Link>
               </div>
             </div>
             <div className="flex justify-center mt-8 w-full">
@@ -284,6 +286,7 @@ function GeneralTasks() {
         {/* <hr className="h-0.5 w-5/6 mx-auto bg-blue-100 mt-8 mb-5" /> */}
         <TotalTime />
         <TimeChart />
+        <NinjaDayPlanner />
         <NinjaProgress />
         <Unlock />
       </div>

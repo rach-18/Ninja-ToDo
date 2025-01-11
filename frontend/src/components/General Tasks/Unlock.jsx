@@ -33,7 +33,7 @@ function Unlock() {
         </ul>
         <Link
           className="text-white bg-purple-500 py-2 w-full rounded-lg text-center"
-          to="#"
+          to="/early-access"
         >
           <BoltOutlinedIcon />
           Become an Early Access Ninja

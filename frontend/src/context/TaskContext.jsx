@@ -120,7 +120,9 @@ export function TaskProvider({ children }) {
     setTasks((prevTasks) => {
       const updatedTasks = { ...prevTasks };
       const timeDuration = Number(updatedTasks[priority][taskIndex].time);
-      setTimeTotal((prev) => prev - timeDuration);
+      if (!tasks[priority][taskIndex].complete) {
+        setTimeTotal((prev) => prev - timeDuration);
+      }
       updatedTasks[priority] = updatedTasks[priority].filter(
         (_, index) => index !== taskIndex
       );
@@ -128,6 +130,9 @@ export function TaskProvider({ children }) {
       return updatedTasks;
     });
     setTotalTasks((prev) => prev - 1);
+    if (completedTasks > 0) {
+      setCompletedTasks((prev) => prev - 1);
+    }
   };
 
   return (
